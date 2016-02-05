@@ -64,17 +64,12 @@ namespace S203.NewRelic.NeuronEsb.Plugin
             Logger.Info("Sedning Metrics to New Relic");
             foreach (var endpoint in data)
             {
-                ReportMetric(FormatMetricName(endpoint, "Heartbeat"), "count", endpoint.Heartbeats);
-                ReportMetric(FormatMetricName(endpoint, "Error"), "count", endpoint.Errors);
-                ReportMetric(FormatMetricName(endpoint, "Warning"), "count", endpoint.Warnings);
-                ReportMetric(FormatMetricName(endpoint, "MessageRate"), "count/second", endpoint.Heartbeats);
-                ReportMetric(FormatMetricName(endpoint, "MessagesProcessed"), "count", endpoint.Heartbeats);
+                ReportMetric("Heartbeat/" + endpoint.Name, "count", endpoint.Heartbeats);
+                ReportMetric("Error/" + endpoint.Name, "count", endpoint.Errors);
+                ReportMetric("Warning/" + endpoint.Name, "count", endpoint.Warnings);
+                ReportMetric("MessageRate", "count/second", endpoint.Heartbeats);
+                ReportMetric("MessagesProcessed/" + endpoint.Name, "count", endpoint.Heartbeats);
             }
-        }
-
-        private static string FormatMetricName(EndpointHealth endpoint, string name)
-        {
-            return name + "/" + endpoint.Hostname + "/" + endpoint.Name;
         }
     }
 }
