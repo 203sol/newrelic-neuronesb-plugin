@@ -11,7 +11,7 @@ namespace S203.NewRelic.NeuronEsb.Plugin
 {
     public class EsbAgent : Agent
     {
-        private static readonly Logger Logger = Logger.GetLogger("ExampleClassName");
+        private static readonly Logger Logger = Logger.GetLogger("NeuronEsbLogger");
         private readonly Version _version = Assembly.GetExecutingAssembly().GetName().Version;
         private readonly string _name;
         private static string _host;

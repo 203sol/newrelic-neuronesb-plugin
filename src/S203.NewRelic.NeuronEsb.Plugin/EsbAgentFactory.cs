@@ -6,7 +6,7 @@ namespace S203.NewRelic.NeuronEsb.Plugin
 {
     public class EsbAgentFactory : AgentFactory
     {
-        private static readonly Logger Logger = Logger.GetLogger("Plugin");
+        private static readonly Logger Logger = Logger.GetLogger("NeuronEsbLogger");
 
         public override Agent CreateAgentWithConfiguration(IDictionary<string, object> properties)
         {

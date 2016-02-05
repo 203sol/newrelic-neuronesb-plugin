@@ -6,7 +6,7 @@ namespace S203.NewRelic.NeuronEsb.Plugin
 {
     internal class Program
     {
-        private static readonly Logger Logger = Logger.GetLogger("Plugin");
+        private static readonly Logger Logger = Logger.GetLogger("NeuronEsbLogger");
 
         private static int Main(string[] args)
         {
