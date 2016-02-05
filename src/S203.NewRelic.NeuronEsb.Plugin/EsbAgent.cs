@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Reflection;
 using NewRelic.Platform.Sdk;
@@ -61,7 +62,14 @@ namespace S203.NewRelic.NeuronEsb.Plugin
             var data = JsonConvert.DeserializeObject<List<EndpointHealth>>(result);
             Logger.Debug("Response received:\n" + data);
 
-            Logger.Info("Sending Metrics to New Relic");
+            Logger.Info("Sending Summary Metrics to New Relic");
+            ReportMetric("Summary/Heartbeat", "count", data.Sum(d => d.Heartbeats));
+            ReportMetric("Summary/Error", "count", data.Sum(d => d.Errors));
+            ReportMetric("Summary/Warning", "count", data.Sum(d => d.Warnings));
+            ReportMetric("Summary/MessageRate", "count", (float)data.Sum(d => d.MessageRate));
+            ReportMetric("Summary/MessagesProcessed", "count", data.Sum(d => d.MessagesProcessed));
+
+            Logger.Info("Sending Individual Metrics to New Relic");
             foreach (var endpoint in data)
             {
                 ReportMetric("Heartbeat/" + endpoint.Name, "count", endpoint.Heartbeats);
