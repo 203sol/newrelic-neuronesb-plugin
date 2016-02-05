@@ -61,13 +61,13 @@ namespace S203.NewRelic.NeuronEsb.Plugin
             var data = JsonConvert.DeserializeObject<List<EndpointHealth>>(result);
             Logger.Debug("Response received:\n" + data);
 
-            Logger.Info("Sedning Metrics to New Relic");
+            Logger.Info("Sending Metrics to New Relic");
             foreach (var endpoint in data)
             {
                 ReportMetric("Heartbeat/" + endpoint.Name, "count", endpoint.Heartbeats);
                 ReportMetric("Error/" + endpoint.Name, "count", endpoint.Errors);
                 ReportMetric("Warning/" + endpoint.Name, "count", endpoint.Warnings);
-                ReportMetric("MessageRate", "count/second", endpoint.Heartbeats);
+                ReportMetric("MessageRate/" + endpoint.Name, "count/second", endpoint.Heartbeats);
                 ReportMetric("MessagesProcessed/" + endpoint.Name, "count", endpoint.Heartbeats);
             }
         }
