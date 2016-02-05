@@ -63,20 +63,20 @@ namespace S203.NewRelic.NeuronEsb.Plugin
             Logger.Debug("Response received:\n" + data);
 
             Logger.Debug("Sending Summary Metrics to New Relic");
-            ReportMetric("Summary/Heartbeat", "checks", data.Sum(d => d.Heartbeats));
-            ReportMetric("Summary/Error", "msg", data.Sum(d => d.Errors));
-            ReportMetric("Summary/Warning", "msg", data.Sum(d => d.Warnings));
-            ReportMetric("Summary/MessageRate", "msg", (float)data.Sum(d => d.MessageRate));
-            ReportMetric("Summary/MessagesProcessed", "msg", data.Sum(d => d.MessagesProcessed));
+            ReportMetric("Summary/Heartbeat", "check", data.Sum(d => d.Heartbeats));
+            ReportMetric("Summary/Error", "message", data.Sum(d => d.Errors));
+            ReportMetric("Summary/Warning", "message", data.Sum(d => d.Warnings));
+            ReportMetric("Summary/MessageRate", "message", (float)data.Sum(d => d.MessageRate));
+            ReportMetric("Summary/MessagesProcessed", "message", data.Sum(d => d.MessagesProcessed));
 
             Logger.Debug("Sending Individual Metrics to New Relic");
             foreach (var endpoint in data)
             {
-                ReportMetric("Heartbeat/" + endpoint.Name, "checks", endpoint.Heartbeats);
-                ReportMetric("Error/" + endpoint.Name, "msg", endpoint.Errors);
-                ReportMetric("Warning/" + endpoint.Name, "msg", endpoint.Warnings);
-                ReportMetric("MessageRate/" + endpoint.Name, "msg", endpoint.Heartbeats);
-                ReportMetric("MessagesProcessed/" + endpoint.Name, "msg", endpoint.Heartbeats);
+                ReportMetric("Heartbeat/" + endpoint.Name, "check", endpoint.Heartbeats);
+                ReportMetric("Error/" + endpoint.Name, "message", endpoint.Errors);
+                ReportMetric("Warning/" + endpoint.Name, "message", endpoint.Warnings);
+                ReportMetric("MessageRate/" + endpoint.Name, "message", endpoint.Heartbeats);
+                ReportMetric("MessagesProcessed/" + endpoint.Name, "message", endpoint.Heartbeats);
             }
         }
     }
