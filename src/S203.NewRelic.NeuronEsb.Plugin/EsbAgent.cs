@@ -55,21 +55,21 @@ namespace S203.NewRelic.NeuronEsb.Plugin
             var client = new WebClient();
             client.Headers.Add("content-Type", "Application/json");
 
-            Logger.Info("Getting Endpoint Health");
+            Logger.Debug("Getting Endpoint Health");
             var result = client.DownloadString(uri);
 
-            Logger.Info("Deserializing Neuron Endpoint Health");
+            Logger.Debug("Deserializing Neuron Endpoint Health");
             var data = JsonConvert.DeserializeObject<List<EndpointHealth>>(result);
             Logger.Debug("Response received:\n" + data);
 
-            Logger.Info("Sending Summary Metrics to New Relic");
+            Logger.Debug("Sending Summary Metrics to New Relic");
             ReportMetric("Summary/Heartbeat", "count", data.Sum(d => d.Heartbeats));
             ReportMetric("Summary/Error", "count", data.Sum(d => d.Errors));
             ReportMetric("Summary/Warning", "count", data.Sum(d => d.Warnings));
             ReportMetric("Summary/MessageRate", "count", (float)data.Sum(d => d.MessageRate));
             ReportMetric("Summary/MessagesProcessed", "count", data.Sum(d => d.MessagesProcessed));
 
-            Logger.Info("Sending Individual Metrics to New Relic");
+            Logger.Debug("Sending Individual Metrics to New Relic");
             foreach (var endpoint in data)
             {
                 ReportMetric("Heartbeat/" + endpoint.Name, "count", endpoint.Heartbeats);
