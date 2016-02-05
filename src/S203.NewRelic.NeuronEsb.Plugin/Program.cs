@@ -2,7 +2,7 @@
 using NewRelic.Platform.Sdk;
 using NewRelic.Platform.Sdk.Utils;
 
-namespace E203.NewRelic.NeuronEsb.Plugin
+namespace S203.NewRelic.NeuronEsb.Plugin
 {
     internal class Program
     {
