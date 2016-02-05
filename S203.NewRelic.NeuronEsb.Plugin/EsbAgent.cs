@@ -33,7 +33,7 @@ namespace S203.NewRelic.NeuronEsb.Plugin
             _instance = instance;
         }
 
-        public override string Guid => "E203.NewRelic.NeuronEsb";
+        public override string Guid => "S203.NewRelic.NeuronEsb.Plugin";
         public override string Version => _version.Major + "." + _version.Minor + "." + _version.Build;
 
         public override string GetAgentName()
