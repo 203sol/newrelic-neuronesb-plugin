@@ -1,5 +1,5 @@
 ﻿
-namespace S203.NewRelic.NeuronEsb.Plugin
+namespace S203.NewRelic.NeuronEsb
 {
     public class EndpointHealth
     {

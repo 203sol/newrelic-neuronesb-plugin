@@ -7,7 +7,7 @@ using NewRelic.Platform.Sdk;
 using NewRelic.Platform.Sdk.Utils;
 using Newtonsoft.Json;
 
-namespace S203.NewRelic.NeuronEsb.Plugin
+namespace S203.NewRelic.NeuronEsb
 {
     public class EsbAgent : Agent
     {
