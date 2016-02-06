@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S203.NewRelic.NeuronEsb.Plugin", "S203.NewRelic.NeuronEsb.Plugin\S203.NewRelic.NeuronEsb.Plugin.csproj", "{6CBAB068-5DC0-4FF9-BED1-EAC7ABC647F3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "S203.NewRelic.NeuronEsb", "S203.NewRelic.NeuronEsb\S203.NewRelic.NeuronEsb.csproj", "{6CBAB068-5DC0-4FF9-BED1-EAC7ABC647F3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
