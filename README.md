@@ -32,7 +32,7 @@ Running the Agent
 
 1. No seriously, Option 1 is easier.
 2. Doanload the latest `com.203sol.newrelic.neuronesb.Z.Y.Z.zip` from the [GitHub releases page](https://github.com/203sol/newrelic-neuronesb-plugin/releases).
-3. Extract the downloaded archive to the location you want to run the Memcached agent from
+3. Extract the downloaded archive to the location you want to run the Neuron ESB plugin from
 4. Copy `<plugindir>/config/newrelic.template.json` to `<plugindir>/config/newrelic.json`
 5. Copy `<plugindir>/config/plugin.template.json` to `<plugindir>/config/plugin.json`
 6. Update `<plugindir>/config/newrelic.json` with your New Relic license key.
