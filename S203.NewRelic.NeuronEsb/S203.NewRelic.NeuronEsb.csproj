@@ -56,7 +56,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="EndpointHealth.cs" />
     <Compile Include="EsbAgent.cs" />
     <Compile Include="EsbAgentFactory.cs" />
     <Compile Include="Program.cs" />

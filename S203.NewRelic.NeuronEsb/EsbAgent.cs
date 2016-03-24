@@ -4,8 +4,9 @@ using System.Linq;
 using System.Net;
 using System.Reflection;
 using NewRelic.Platform.Sdk;
+using NewRelic.Platform.Sdk.Processors;
 using NewRelic.Platform.Sdk.Utils;
-using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace S203.NewRelic.NeuronEsb
 {
@@ -17,6 +18,12 @@ namespace S203.NewRelic.NeuronEsb
         private static string _host;
         private static int _port;
         private static string _instance;
+
+        private readonly IDictionary<string, IDictionary<string, EpochProcessor>> _queueProcessors;
+        private readonly IProcessor _heartbeats;
+        private readonly IProcessor _errors;
+        private readonly IProcessor _warnings;
+        private readonly IProcessor _messagesProcessed;
 
         public EsbAgent(string name, string host, int port, string instance)
         {
@@ -31,6 +38,12 @@ namespace S203.NewRelic.NeuronEsb
             _host = host;
             _port = port;
             _instance = instance;
+
+            _queueProcessors = new Dictionary<string, IDictionary<string, EpochProcessor>>();
+            _heartbeats = new EpochProcessor();
+            _errors = new EpochProcessor();
+            _warnings = new EpochProcessor();
+            _messagesProcessed = new EpochProcessor();
         }
 
         public override string Guid => "com.203sol.newrelic.neuronesb";
@@ -46,38 +59,62 @@ namespace S203.NewRelic.NeuronEsb
             // Assemble URIs
             var esbUri = $"http://{_host}:{_port}/neuronesb/api/v1/";
             var endpointHealth = $"endpointhealth/{_instance}";
-
-            var serializer = new JsonSerializer();
-
+            
             // Get endpoint health from Neuron
             var uri = esbUri + endpointHealth;
             Logger.Debug("Endpoint URI: " + esbUri);
             var client = new WebClient();
-            client.Headers.Add("content-Type", "Application/json");
+            client.Headers.Add("content-type", "application/json");
 
             Logger.Debug("Getting Endpoint Health");
-            var result = client.DownloadString(uri);
-
-            Logger.Debug("Deserializing Neuron Endpoint Health");
-            var data = JsonConvert.DeserializeObject<List<EndpointHealth>>(result);
-            Logger.Debug("Response received:\n" + data);
+            var json = JArray.Parse(client.DownloadString(uri));
+            
+            Logger.Debug("Response received:\n" + json);
 
             Logger.Debug("Sending Summary Metrics to New Relic");
-            ReportMetric("Summary/Heartbeat", "checks", data.Sum(d => d.Heartbeats));
-            ReportMetric("Summary/Error", "messages", data.Sum(d => d.Errors));
-            ReportMetric("Summary/Warning", "messages", data.Sum(d => d.Warnings));
-            ReportMetric("Summary/MessageRate", "messages", (float)data.Sum(d => d.MessageRate));
-            ReportMetric("Summary/MessagesProcessed", "messages", data.Sum(d => d.MessagesProcessed));
+            ReportMetric("Summary/Heartbeats", "Messages/Second", _heartbeats.Process(json.Sum(j=>j["heartbeats"].Value<float>())));
+            ReportMetric("Summary/Errors", "Messages/Second", _errors.Process(json.Sum(j=>j["errors"].Value<float>())));
+            ReportMetric("Summary/Warnings", "Messages/Second", _warnings.Process(json.Sum(j => j["warnings"].Value<float>())));
+            ReportMetric("Summary/MessagesProcessed", "Messages/Second", _messagesProcessed.Process(json.Sum(j => j["messagesProcessed"].Value<float>())));
 
             Logger.Debug("Sending Individual Metrics to New Relic");
-            foreach (var endpoint in data)
+            foreach (var endpoint in json)
             {
-                ReportMetric("Heartbeat/" + endpoint.Name, "checks", endpoint.Heartbeats);
-                ReportMetric("Error/" + endpoint.Name, "messages", endpoint.Errors);
-                ReportMetric("Warning/" + endpoint.Name, "messages", endpoint.Warnings);
-                ReportMetric("MessageRate/" + endpoint.Name, "messages", endpoint.Heartbeats);
-                ReportMetric("MessagesProcessed/" + endpoint.Name, "messages", endpoint.Heartbeats);
+                var name = endpoint["name"].Value<string>();
+                // See if the processors exist
+                if (!_queueProcessors.ContainsKey(name))
+                {
+                    // Add the processors
+                    var metrics = new Dictionary<string, EpochProcessor>
+                    {
+                        {"Heartbeats", new EpochProcessor()},
+                        {"Errors", new EpochProcessor()},
+                        {"Warnings", new EpochProcessor()},
+                        {"MessagesProcessed", new EpochProcessor()}
+                    };
+                    _queueProcessors.Add(name, metrics);
+                }
+
+                // Process Metrics
+                var currentQueue = _queueProcessors.FirstOrDefault(k => k.Key == name);
+                foreach (var metric in currentQueue.Value)
+                {
+                    Logger.Debug("Metric Name: " + metric.Key);
+                    Logger.Debug("Metric Value: " + endpoint[LowercaseFirst(metric.Key)].Value<float>());
+                    ReportMetric("Queues/" + metric.Key + "/" + name, "Messages/Second", metric.Value.Process(endpoint[LowercaseFirst(metric.Key)].Value<float>()));
+                }
             }
+        }
+
+        private string LowercaseFirst(string s)
+        {
+            // Check for empty string.
+            if (string.IsNullOrEmpty(s))
+            {
+                return string.Empty;
+            }
+            // Return char and concat substring.
+            return char.ToLower(s[0]) + s.Substring(1);
         }
     }
 }
